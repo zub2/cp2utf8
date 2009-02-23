@@ -1,0 +1,48 @@
+What is it?
+===========
+
+cp2utf8 - a tool for converting 8-byte data into UTF8 based on translation
+tables identical to those used by the linux kbd package. (See setfont(8)).
+
+
+Why not to simply use iconv?
+============================
+
+For some unknown-to-me reason, iconv destroys most of the non-alphanumeric
+characters. I needed a tool to convert pretty much everything that can be
+represented in unicode into appropriate unicode characters (for example I
+wanted to keep the "graphical" characters - those used for frames etc.).
+
+The situation was similar with other tools. :-/
+
+Still this program is generic enough to be usable for many charsets, as long
+as you have the appropriate translation table (and it's not difficult to create
+new tables, should you need something exotic).
+
+I'm personally using this program together with DOSEMU, as part of a print
+filter.
+
+
+Compiling
+=========
+
+No autotools needed, just plain makefile. Nothing more than the standard C
+runtime is needed, so compiling should be trivial. Just type 'make' and
+that should be it.
+
+
+Installing
+==========
+
+Apart from the standard C runtime it doesn't require anything else, so you can
+put it anywhere...
+
+If anybody finds it useful, enjoy! :-)
+
+
+Licence
+=======
+
+GNU GPL 2 or newer.
+
+$Id: README,v 1.2 2006/04/10 19:04:45 zub Exp $
