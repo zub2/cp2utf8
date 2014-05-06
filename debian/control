@@ -1,0 +1,20 @@
+Source: cp2utf8
+Maintainer: David Kozub <zub@linux.fjfi.cvut.cz>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9)
+
+Package: cp2utf8
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Character set conversion utility.
+ This program converts input from legacy 8bit encodings into UTF-8. It uses
+ a .trans file (the same as these used by the package kbdtools).
+ .
+ The distinguishing features of this program are:
+  * it's easy to create your own mapping table
+  * all bytes (including control characters) are mapped
+ .
+ Included in the package are conversion tables for CP852 and CP895 aka.
+ Kamenicky. Especially the latter one is exotic.

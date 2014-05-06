@@ -1,8 +1,16 @@
-cp2utf8
+src/cp2utf8
+
 CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
 install_manifest.txt
+
+debian/cp2utf8/
+debian/cp2utf8.debhelper.log
+debian/cp2utf8.substvars
+debian/files
+obj-x86_64-linux-gnu/
+
 .cproject
 .project
