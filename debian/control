@@ -3,7 +3,7 @@ Maintainer: David Kozub <zub@linux.fjfi.cvut.cz>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9)
+Build-Depends: debhelper (>= 9), cmake (>= 2.6)
 
 Package: cp2utf8
 Architecture: any
