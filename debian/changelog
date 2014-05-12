@@ -1,6 +1,7 @@
-cp2utf8 (1.0-2) UNRELEASED; urgency=medium
+cp2utf8 (1.0.1-1) UNRELEASED; urgency=medium
 
   * Initial release.
   * Add cmake as build dependency.
+  * Fix an omission in source headers (licence boilerplate).
 
- -- David Kozub <zub.272@gmail.com>  Mon, 12 May 2014 21:20:53 +0200
+ -- David Kozub <zub.272@gmail.com>  Mon, 12 May 2014 22:15:44 +0200
