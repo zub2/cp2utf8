@@ -10,8 +10,9 @@ install_manifest.txt
 CTestTestfile.cmake
 Testing/
 
+debian/tmp
+debian/*.debhelper.log
 debian/cp2utf8/
-debian/cp2utf8.debhelper.log
 debian/cp2utf8.substvars
 debian/files
 obj-x86_64-linux-gnu/

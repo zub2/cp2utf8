@@ -5,9 +5,39 @@ Priority: optional
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9), cmake (>= 2.6)
 
-Package: cp2utf8
+Package: cp2utf8-data
 Architecture: any
+Section: libs
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Character set conversion utility.
+ This library converts input from legacy 8bit encodings into UTF-8. It uses
+ a .trans file (the same as these used by the package kbdtools).
+ .
+ The distinguishing features of this program are:
+  * it's easy to create your own mapping table
+  * all bytes (including control characters) are mapped
+ .
+ This package contains conversion tables for CP850, CP852 and CP895 aka.
+ Kamenicky. Especially the latter one is exotic.
+
+Package: libcp2utf8-1
+Architecture: any
+Section: libs
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, cp2utf8-data (= ${binary:Version})
+Description: Character set conversion utility.
+ This library converts input from legacy 8bit encodings into UTF-8. It uses
+ a .trans file (the same as these used by the package kbdtools).
+ .
+ The distinguishing features of this program are:
+  * it's easy to create your own mapping table
+  * all bytes (including control characters) are mapped
+
+Package: libcp2utf8-1-dev
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends}, libcp2utf8-1 (= ${binary:Version})
 Description: Character set conversion utility.
  This program converts input from legacy 8bit encodings into UTF-8. It uses
  a .trans file (the same as these used by the package kbdtools).
@@ -16,5 +46,18 @@ Description: Character set conversion utility.
   * it's easy to create your own mapping table
   * all bytes (including control characters) are mapped
  .
- Included in the package are conversion tables for CP852 and CP895 aka.
- Kamenicky. Especially the latter one is exotic.
+ This package contains the development headers necessary to build software
+ using the library.
+
+Package: cp2utf8
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libcp2utf8-1 (= ${binary:Version})
+Description: Character set conversion utility.
+ This program converts input from legacy 8bit encodings into UTF-8. It uses
+ a .trans file (the same as these used by the package kbdtools).
+ .
+ The distinguishing features of this program are:
+  * it's easy to create your own mapping table
+  * all bytes (including control characters) are mapped
+ .
+ This package contains the command line utility that uses the cp2utf8 library.
