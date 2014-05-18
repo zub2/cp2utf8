@@ -17,8 +17,9 @@
  * along with cp2utf8. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
-#include <cstdlib>
+#include <algorithm>
+#include <sstream>
+#include <stdexcept>
 
 #include "to_utf8.h"
 
@@ -30,62 +31,77 @@
 #define UTF8_CONT_MASK  0x3f   /* '00 111111' */
 #define UTF8_CONT_SHIFT 6
 
-/**
- * Returns the UTF8 representation of a given unicode character.
- *
- * This is inefficient. But I was lazy searching for/coming up with something
- * more efficient.
- */
-std::string conv_to_utf8(TUnicodeChar character)
+namespace cp2utf8
 {
-    char c[4];
-    int used = 0;
+    void appendUtf8(std::string &str, TUnicodeChar character)
+    {
+        /* Convert to UTF8 */
+        if (character < 0x80)
+        {
+            /* 0xxxxxxx - identity: */
+            str.push_back(static_cast<char>(character));
+        }
+        else if (character < 0x800)
+        {
+            /* 110xxxxx 10xxxxxx */
+            char c[2];
+            c[1] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
+            character >>= UTF8_CONT_SHIFT;
+            c[0] = static_cast<char>(UTF8_PREFIX1 | character);
+            str.append(c, sizeof(c));
+        }
+        else if (character < 0x10000)
+        {
+            /* 1110xxxx 10xxxxxx 10xxxxxx */
+            char c[3];
+            c[2] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
+            character >>= UTF8_CONT_SHIFT;
+            c[1] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
+            character >>= UTF8_CONT_SHIFT;
+            c[0] = static_cast<char>(UTF8_PREFIX2 | character);
+            str.append(c, sizeof(c));
+        }
+        else if (character < 0x110000)
+        {
+            /* 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx */
+            char c[4];
+            c[3] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
+            character >>= UTF8_CONT_SHIFT;
+            c[2] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
+            character >>= UTF8_CONT_SHIFT;
+            c[1] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
+            character >>= UTF8_CONT_SHIFT;
+            c[0] = static_cast<char>(UTF8_PREFIX3 | character);
+            str.append(c, sizeof(c));
+        }
+        else
+        {
+            std::stringstream stringStream;
+            stringStream << "cannot express character U+" << std::hex << character << " in UTF-8";
+            throw std::runtime_error(stringStream.str());
+        }
+    }
 
-    /* Convert to UTF8 */
-    if (character < 0x80)
+    /**
+     * Returns the UTF8 representation of a given unicode character.
+     *
+     * This is inefficient. But I was lazy searching for/coming up with something
+     * more efficient.
+     */
+    std::string convToUtf8(TUnicodeChar character)
     {
-        /* 0xxxxxxx - identity: */
-        c[0] = static_cast<char>(character);
-        used = 1;
-    }
-    else if (character < 0x800)
-    {
-        /* 110xxxxx 10xxxxxx */
-        c[1] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
-        character >>= UTF8_CONT_SHIFT;
-        c[0] = static_cast<char>(UTF8_PREFIX1 | character);
-        used = 2;
-    }
-    else if (character < 0x10000)
-    {
-        /* 1110xxxx 10xxxxxx 10xxxxxx */
-        c[2] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
-        character >>= UTF8_CONT_SHIFT;
-        c[1] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
-        character >>= UTF8_CONT_SHIFT;
-        c[0] = static_cast<char>(UTF8_PREFIX2 | character);
-        used = 3;
-    }
-    else if (character < 0x110000)
-    {
-        /* 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx */
-        c[3] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
-        character >>= UTF8_CONT_SHIFT;
-        c[2] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
-        character >>= UTF8_CONT_SHIFT;
-        c[1] = static_cast<char>(UTF8_CONT | (character & UTF8_CONT_MASK));
-        character >>= UTF8_CONT_SHIFT;
-        c[0] = static_cast<char>(UTF8_PREFIX3 | character);
-        used = 4;
-    }
-    else
-    {
-        fprintf(stderr,"Cannot express character U+%x in UTF-8.\n", character);
-        abort();
+        std::string result;
+        appendUtf8(result, character);
+        return result;
     }
 
-    std::string buff;
-    buff.append(c, used);
-
-    return buff;
+    std::string convToUtf8(ustring const& ustr)
+    {
+        std::string result;
+        std::for_each(ustr.begin(), ustr.end(), [&](ustring::value_type u)
+            {
+                appendUtf8(result, u);
+            });
+        return result;
+    }
 }

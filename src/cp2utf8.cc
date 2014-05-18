@@ -17,29 +17,26 @@
  * along with cp2utf8. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>
 #include <cstring>
-#include <cstdio>
-#include <cerrno>
 
-#include "cp2utf8.h"
-#include "to_utf8.h"
-#include "tbl_parse.h"
+#include <iostream>
+#include <memory>
+
+#include "converter.h"
 
 static const char *progname = "cp2utf8";
-static const char *DEFAULT_PATH = PREFIX "/share/cp2utf8/tables/";
 
 void print_help()
 {
-    printf(
-        "Usage: %s translation_table_file\n"
+    std::cout <<
+        "Usage: " << progname << " translation_table_file\n"
         "Translates standard input according to translation table into UTF8 to "
         "standard output.\n"
         "translation_table_file is a file in the same format as that used by "
         "kbd. See setfont(8).\n"
         "translation_table_file is searched for as given, if it's not found, "
-        "\"%s\" is prepended to the path.\n", progname, DEFAULT_PATH
-    );
+        "\"" << cp2utf8::Converter::DEFAULT_PATH << "\" is prepended to the path.\n"
+        << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -53,46 +50,25 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    FILE *f = fopen(argv[1], "r");
-    if (!f && errno == ENOENT)
+    try
     {
-        // retry with default path
-        std::string s(DEFAULT_PATH);
-        s += argv[1];
-        f = fopen(s.c_str(), "r");
-        if (!f)
+        std::unique_ptr<cp2utf8::Converter> converter(new cp2utf8::Converter(argv[1],
+                [](std::string const& msg) { std::cerr << "warning: " << msg << std::endl; }));
+
+        // perform the actual conversion
+        char c;
+        std::cin.read(&c, 1);
+        while (std::cin.good())
         {
-            perror("cannot open translation table file (tried default path)");
-            return EXIT_FAILURE;
+            std::string utf8 = converter->convert(std::string(1, static_cast<char>(c)));
+            std::cout.write(utf8.data(), utf8.size());
+            std::cin.read(&c, 1);
         }
     }
-
-    if (!f)
+    catch (cp2utf8::FileNotFoundException const&)
     {
-        perror("cannot open translation table file");
+        std::cerr << "Can't open input table." << std::endl;
         return EXIT_FAILURE;
-    }
-
-    TTransTable t;
-    read_table(f, t);
-
-    // perform actual conversion
-    int c;
-    while ((c = getchar()) != EOF)
-    {
-        TTransTable::const_iterator it = t.find(c);
-        if (it == t.end())
-        {
-            continue; // assume no entry = translate to empty string
-        }
-
-        const ustring& s = it->second;
-        for (unsigned i = 0; i < s.length(); i++)
-        {
-            std::string utf8 = conv_to_utf8(s[i]);
-            for (size_t j = 0; j < utf8.length(); j++)
-                putchar(utf8[j]);
-        }
     }
 
     return EXIT_SUCCESS;

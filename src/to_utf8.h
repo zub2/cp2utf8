@@ -17,15 +17,28 @@
  * along with cp2utf8. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TO_UTF8_H
-#define TO_UTF8_H
+#ifndef CP2UTF8_TO_UTF8_H
+#define CP2UTF8_TO_UTF8_H
 
 #include <string>
 #include "cp2utf8.h"
 
-/**
- * Convert a unicode character into UTF8.
- */
-std::string conv_to_utf8(TUnicodeChar character);
+namespace cp2utf8
+{
+    /**
+     * Append UTF-8 representation of a given character to given string.
+     */
+    void appendUtf8(std::string &str, TUnicodeChar character);
 
-#endif // TO_UTF8_H
+    /**
+     * Convert a unicode character into UTF8.
+     */
+    std::string convToUtf8(TUnicodeChar character);
+
+    /**
+     * Convert a string of unicode characters into UTF8.
+     */
+    std::string convToUtf8(ustring const& ustr);
+}
+
+#endif // CP2UTF8_TO_UTF8_H

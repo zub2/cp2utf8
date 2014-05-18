@@ -1,10 +1,14 @@
 src/cp2utf8
+src/libcp2utf8.so
+test/cp2utf8_test
 
 CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
 install_manifest.txt
+CTestTestfile.cmake
+Testing/
 
 debian/cp2utf8/
 debian/cp2utf8.debhelper.log
