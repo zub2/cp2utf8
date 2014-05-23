@@ -37,7 +37,7 @@ namespace cp2utf8
         ;
     }
 
-    char const Converter::DEFAULT_PATH[] = PREFIX "/share/cp2utf8/tables/";
+    char const Converter::DEFAULT_PATH[] = PREFIX "/share/cp2utf8-data/tables/";
 
     Converter::Converter(std::string const& tableName, TWarningCallback warningCallback)
     {
